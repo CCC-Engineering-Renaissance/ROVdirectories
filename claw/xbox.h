@@ -50,6 +50,8 @@ void controls1(SDL_GameController* controller) {
         if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER))
             state.roll += 1.0f;
 
+	
+
         SDL_Delay(16); // 60 FPS
     }
 

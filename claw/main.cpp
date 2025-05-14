@@ -8,7 +8,7 @@
 using namespace std;
 
 
-const int THRUSTER1 = 2;  //19
+const int THRUSTER1 = 26;  //19
 const int THRUSTER2 = 3;   // 26
 const int THRUSTER3 = 13;
 const int THRUSTER4 = 0;
@@ -56,17 +56,24 @@ int main(){
 
 	SDL_GameController* controller = SDL_GameControllerOpen(0); // Get the controller
 
+	if (!controller) {
+		cerr << "Controller not detected: " << SDL_GetError() << endl;
+		return -1;
+	} else {
+		cout << "Controller Connected: " << SDL_GameControllerName(controller) << endl;
+	}
+
 	pca9685 driver;
-	driver.setFrequency(75);
+	driver.setFrequency(50);
 
 	thread control(controls1, controller);
 	uint16_t test = 1500;
 
 	/* for (int i = 0; i < 10; i++){
-		driver.setPWM(i, 1000);
-		driver.setPWM(i, 2000);
-		driver.setPWM(i, 1500);
-	} */
+	   driver.setPWM(i, 1000);
+	   driver.setPWM(i, 2000);
+	   driver.setPWM(i, 1500);
+	   } */
 
 	driver.setPWM(0, 1000);		// For some reason the motors are more responsive when doing this rather than in a for loop
 	driver.setPWM(0, 2000);
@@ -80,28 +87,52 @@ int main(){
 	driver.setPWM(2, 2000);
 	driver.setPWM(2, 1500);
 
+
+
+
+	//lgTxServo(h, 6, 1000, 50, 0, 0);
+	//lgTxServo(h, 6, 2000, 50, 0, 0);
+	//lgTxServo(h, 6, 1500, 50, 0, 0);
+
+	//	usleep(1000);
+
+	//lgTxServo(h, 5, 1000, 50, 0, 0);
+	//lgTxServo(h, 5, 1500, 50, 0, 0);
+
+
+	cout << lgTxServo(h, THRUSTER1, 1500, 50, 0, 0) << endl;
+
 	usleep(50000);
 	uint16_t back = test;
 
+
+
 	while (isRunning()){
-		test = 1400 + 400 * state.forward;
+		int x;
 		double smoothing = 0.5;
 		cout << lerp(back, test, smoothing) << '\r';
 		cout.flush();
 
+		//cin >> x;
+		test = 1500 + 400 * back;
 		for (int i = 0; i < 10; i++){
-			driver.setPWM(i, lerp(back, test, smoothing));
+			driver.setPWM(i, test);
 		}
 
-		back = lerp(back, test, smoothing);
-	
+//		back = lerp(back, test, smoothing);
+//		cin >> x;
+//		lgTxServo(h, THRUSTER1, x, 50, 0, 0);
+//		//	usleep(100);
+//		//lgTxServo(h, 5, x, 50, 0, 0);
+//		//	usleep(100);
+
 	}
 
 
 	// Join Thread
-		control.join(); //
-		SDL_GameControllerClose(controller);
-		SDL_Quit();
+	control.join(); //
+	SDL_GameControllerClose(controller);
+	SDL_Quit();
 
 	lgGpiochipClose(h);
 }
