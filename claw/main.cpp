@@ -54,14 +54,13 @@ int main(){
 	h = lgGpiochipOpen(0); 
 	SDL_Init(SDL_INIT_GAMECONTROLLER); // Initialize SDL
 
-	SDL_GameController* controller = SDL_GameControllerOpen(0); // Get the controller
-
-	if (!controller) {
-		cerr << "Controller not detected: " << SDL_GetError() << endl;
-		return -1;
-	} else {
-		cout << "Controller Connected: " << SDL_GameControllerName(controller) << endl;
-	}
+	SDL_GameController* controller = SDL_GameControllerOpen(0); // Get the controller and check connection
+//	if (!controller) {
+//		cerr << "Controller not detected: " << SDL_GetError() << endl;
+//		return -1;
+//	} else {
+//		cout << "Controller Connected: " << SDL_GameControllerName(controller) << endl;
+//	} 
 
 	pca9685 driver;
 	driver.setFrequency(50);
@@ -110,21 +109,22 @@ int main(){
 	while (isRunning()){
 		int x;
 		double smoothing = 0.5;
-		cout << lerp(back, test, smoothing) << '\r';
-		cout.flush();
+//		cout << lerp(back, test, smoothing) << '\r';
+//		cout.flush();
 
-		//cin >> x;
-		test = 1500 + 400 * back;
+//		test = 1500 + 400 * back;
 		for (int i = 0; i < 10; i++){
 			driver.setPWM(i, test);
 		}
 
-//		back = lerp(back, test, smoothing);
-//		cin >> x;
-//		lgTxServo(h, THRUSTER1, x, 50, 0, 0);
-//		//	usleep(100);
-//		//lgTxServo(h, 5, x, 50, 0, 0);
-//		//	usleep(100);
+		back = lerp(back, test, smoothing);
+		cin >> x;
+		cout << x << "\r";
+		cout.flush();
+		lgTxServo(h, THRUSTER1, x, 50, 0, 0);
+		//	usleep(100);
+		//lgTxServo(h, 5, x, 50, 0, 0);
+		//	usleep(100);
 
 	}
 
